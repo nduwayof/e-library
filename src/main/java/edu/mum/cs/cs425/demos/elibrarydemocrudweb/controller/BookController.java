@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Controller
 public class BookController {
@@ -44,7 +45,7 @@ public class BookController {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "book/new";
         }
-        book = bookService.saveBook(book);
+        bookService.saveBook(book);
         return "redirect:/elibrary/book/list";
     }
 
@@ -65,7 +66,7 @@ public class BookController {
             model.addAttribute("errors", bindingResult.getAllErrors());
             return "book/edit";
         }
-        book = bookService.saveBook(book);
+        bookService.saveBook(book);
         return "redirect:/elibrary/book/list";
     }
 
@@ -73,6 +74,16 @@ public class BookController {
     public String deleteBook(@PathVariable Integer bookId, Model model) {
         bookService.deleteBookById(bookId);
         return "redirect:/elibrary/book/list";
+    }
+
+    @PostMapping(value = {"/elibrary/book/list"})
+    public ModelAndView searchBooks(@RequestParam(defaultValue = "0") int pageno,
+                              @ModelAttribute("book") Book book){
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.addObject("books", bookService.findBooksByTitle(pageno,book.getTitle()));
+        modelAndView.addObject("currentPageNo", pageno);
+        modelAndView.setViewName("/book/list");
+        return modelAndView;
     }
 
 }

@@ -9,11 +9,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class BookServiceImpl implements BookService {
@@ -22,22 +18,13 @@ public class BookServiceImpl implements BookService {
     private BookRepository repository;
 
     @Override
-    public Iterable<Book> getAllBooks() {
-//        return ((List<Book>)repository.findAll())
-//                .stream()
-//                .sorted(Comparator.comparing(Book::getTitle))
-//                .collect(Collectors.toList());
-        return repository.findAll(Sort.by("title"));
-    }
-
-    @Override
     public Page<Book> getAllBooksPaged(int pageNo) {
         return repository.findAll(PageRequest.of(pageNo, 3, Sort.by("title")));
     }
 
     @Override
-    public Book saveBook(Book book) {
-        return repository.save(book);
+    public void saveBook(Book book) {
+        repository.save(book);
     }
 
     @Override
@@ -50,4 +37,8 @@ public class BookServiceImpl implements BookService {
         repository.deleteById(bookId);
     }
 
+    @Override
+    public Page<Book> findBooksByTitle(int page, String title) {
+        return repository.findBooksByTitleContains(PageRequest.of(page, 3, Sort.by("title")),title);
+    }
 }
